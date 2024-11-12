@@ -27,16 +27,24 @@ def _bezier_n(t: float, points: list) -> float:
 
 
 
-def bezier_linier(delta_t: float, points: list) -> list:
+def linier(delta_t: float, points: list) -> list:
     """
-    delta_t: nilai dari delta t
-    points: list
-
-    Note: hanya bisa untuk panjang list 2
+    Menghitung kordiat bezier linier
+    Args:
+    - delta_t: nilai dari delta t
+    - points: list
 
     example:
         [(x0, y0), (x1, y1)]
+
+    Return:
+    - list points kordiat 
+
+    Note: hanya bisa untuk panjang list 2
     """
+    if len(points) > 3:
+        raise ValueError("Kordinat harus kurang dari 3!!!")
+
     point = []
 
     t = 0.0
@@ -57,13 +65,49 @@ def bezier_linier(delta_t: float, points: list) -> list:
 
     return point
 
+def kuadratik(delta_t: float, points: list) -> list:
+    """
+    Menghitung titik-titik pada kurva Bézier kuadratik.
+
+    Args:
+    - points: list dari 3 koordinat titik kontrol [(x0, y0), (x1, y1), (x2, y2)]
+    - delta_t: langkah perubahan nilai t (misalnya 0.01)
+
+    Returns:
+    - list_points: Daftar koordinat (x, y) pada kurva
+    """
+    if len(points) != 3:
+        raise ValueError("Kurva Bézier kuadratik membutuhkan tepat 3 titik kontrol.")
+
+    P0, P1, P2 = points
+    list_points = []
+    t = 0.0
+
+    while t <= 1:
+     
+        x = (1 - t)**2 * P0[0] + 2 * (1 - t) * t * P1[0] + t**2 * P2[0]
+        y = (1 - t)**2 * P0[1] + 2 * (1 - t) * t * P1[1] + t**2 * P2[1]
+        
+        list_points.append((x, y))
+        t += delta_t
+
+    return list_points
 
 
-def bezier_kuadratik(alpaa_t: float, points: list) -> list:
+def kubik(alpaa_t: float, points: list) -> list:
     """
-    alapa_t: berapa jarak
-    points: kordinat
+    Menghitung kuarva kubik
+
+    Args:
+    - points: list koordinat titik kontrol [(x0, y0), (x1, y1), (x2, y2)]
+    - delta_t: langkah perubahan nilai t (misalnya 0.01)
+
+    Returns:
+    - list_points: Daftar koordinat (x, y) pada kurva
     """
+    if len(points) <= 3:
+        raise ValueError("Kordinat harus lebih dari 3 titik!!!")
+
     t = 0.0
     point = []
 
@@ -75,20 +119,4 @@ def bezier_kuadratik(alpaa_t: float, points: list) -> list:
         t += alpaa_t
     return point
 
-if __name__ == "__main__":
-    delta = 0.2
-    linier_list = [
-        (1, 2),
-        (11, 12)
-    ]
 
-    point = [
-            (1, 2),
-            (7, 10),
-            (15, 4)
-            ]
-
-    print("Bezer: ")
-    print(bezier_kuadratik(delta, point))
-    print("Bezer Linier: ")
-    print(bezier_linier(delta, linier_list))

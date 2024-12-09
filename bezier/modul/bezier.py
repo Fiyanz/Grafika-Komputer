@@ -13,12 +13,12 @@ def _bezier_n(t: float, points: list) -> float:
     t: delta t
     points: titik kordinat
     """
-    n = len(points)
+    n = len(points) - 1
 
     x = 0.0
     y = 0.0
 
-    for i in range(n):
+    for i in range(n + 1):
         basis = comb(n, i) * ((1 - t) ** (n - i)) * (t**i)
         x += basis * points[i][0]
         y += basis * points[i][1]
@@ -94,7 +94,7 @@ def kuadratik(delta_t: float, points: list) -> list:
     return list_points
 
 
-def kubik(alpaa_t: float, points: list) -> list:
+def kubik(delta_t: float, points: list) -> list:
     """
     Menghitung kuarva kubik
 
@@ -116,7 +116,7 @@ def kubik(alpaa_t: float, points: list) -> list:
         x, y = _bezier_n(t, points)
         point.append((x, y))
 
-        t += alpaa_t
+        t += delta_t
     return point
 
 

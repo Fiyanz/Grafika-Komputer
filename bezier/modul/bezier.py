@@ -99,7 +99,7 @@ def kubik(delta_t: float, points: list) -> list:
     Menghitung kuarva kubik
 
     Args:
-    - points: list koordinat titik kontrol [(x0, y0), (x1, y1), (x2, y2)]
+    - points: list koordinat titik kontrol [(x0, y0), (x1, y1), (x2, y2), ..., (xn, yn)]
     - delta_t: langkah perubahan nilai t (misalnya 0.01)
 
     Returns:

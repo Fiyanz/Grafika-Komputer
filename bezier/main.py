@@ -20,7 +20,7 @@ def plot_bzier(bzr: list) -> None:
 def interactive_plot(points: list) -> None:
     # Titik awal
     initial_points = points[:]
-    delta_t = 0.02
+    delta_t = 0.01
 
     fig, ax = plt.subplots(figsize=(6, 6))
     plt.subplots_adjust(bottom=0.25)
@@ -97,7 +97,7 @@ def interactive_plot(points: list) -> None:
     plt.show()
 
 if __name__ == "__main__":
-    delta_t = 0.02
+    delta_t = 0.1
 
     points_kubik = [
         (-8, -8),

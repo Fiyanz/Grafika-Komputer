@@ -1,6 +1,6 @@
-import matplotlib.pyplot as plt
+import  matplotlib.pyplot as plt
 import modul.bezier as bzr
-from matplotlib.widgets import Slider, Button
+from matplotlib.widgets import Slider, Button, TextBox
 
 
 def plot_bzier(bzr: list) -> None:
@@ -96,22 +96,124 @@ def interactive_plot(points: list) -> None:
     update(None)
     plt.show()
 
+def manual_point_plot() -> list:
+    points = []
+    fig, ax = plt.subplots(figsize=(6, 6))
+    plt.subplots_adjust(bottom=0.25)
+
+    points_line, = ax.plot([], [], 'ro-', label='Control Points')
+    ax.legend()
+
+    ax.set_xlim(-10, 10)
+    ax.set_ylim(-10, 10)
+    ax.grid(True)
+    ax.set_title("Manual Point Plot - Click to Add Points")
+
+    def update():
+        if points:
+            x_coords, y_coords = zip(*points)
+            points_line.set_data(x_coords, y_coords)
+        else:
+            points_line.set_data([], [])
+        fig.canvas.draw_idle()
+
+    def on_click(event):
+        if event.inaxes == ax:
+            points.append((event.xdata, event.ydata))
+            print(f"Added point: ({event.xdata:.2f}, {event.ydata:.2f})")
+            update()
+
+    def add_point_manually(event):
+        def submit(text):
+            try:
+                x, y = map(float, text.split(','))
+                points.append((x, y))
+                update()
+            except ValueError:
+                print("Input tidak valid. Gunakan format: x,y")
+
+        input_ax = plt.axes([0.1, 0.025, 0.65, 0.04])
+        text_box = TextBox(input_ax, 'Masukkan koordinat (x,y): ')
+        text_box.on_submit(submit)
+
+    def reset(event):
+        points.clear()
+        update()
+
+    def done(event):
+        plt.close()
+
+    # Button setup
+    add_ax = plt.axes([0.7, 0.1, 0.2, 0.04])
+    reset_ax = plt.axes([0.7, 0.025, 0.1, 0.04])
+    done_ax = plt.axes([0.85, 0.025, 0.1, 0.04])
+
+    add_button = Button(add_ax, 'Add Point', color='lightgoldenrodyellow')
+    reset_button = Button(reset_ax, 'Reset', color='lightgoldenrodyellow')
+    done_button = Button(done_ax, 'Done', color='lightgreen')
+
+    add_button.on_clicked(add_point_manually)
+    reset_button.on_clicked(reset)
+    done_button.on_clicked(done)
+
+    fig.canvas.mpl_connect('button_press_event', on_click)
+    
+    plt.show()
+    return points
+
+# Update main section
 if __name__ == "__main__":
-    delta_t = 0.1
-
-    points_kubik = [
-        (-8, -8),
-        (-6, -4),
-        (-4, 0),
-        (-2, 4),
-        (0, 8),
-        (2, 4),
-        (4, 0),
-        (6, -4),
-        (8, -8)
-    ]
-
-    bzr_kubik = bzr.kubik(delta_t, points_kubik)
-    # plot_bzier(bzr_kubik)
-    interactive_plot(points_kubik)
-    # print(bzr_kubik)
+    points_kubik = []
+    while True:
+        print("\nMenu Plotting Kurva Bezier:")
+        print("1. Input Titik (Plot Titik Manual)")
+        print("2. Tampilkan Plot Bezier Statis")
+        print("3. Tampilkan Plot Bezier Interaktif")
+        print("4. Plot Titik Manual")
+        print("5. Keluar")
+        
+        choice = input("Pilih opsi (1-4): ")
+        
+        if choice == '1':
+            points_kubik = []
+            num_points = int(input("Masukan kordinat (minimum 4): "))
+            if num_points < 4:
+                print("Error: koerdinat harus 4 titik!")
+                continue
+            for i in range(num_points):
+                point = input(f"Masukan kordinat ke {i+1} (format: x,y): ")
+                try:
+                    x, y = map(float, point.split(','))
+                    points_kubik.append((x, y))
+                except ValueError:
+                    print("Invalid input. Use format: x,y")
+                    points_kubik = []
+                    break
+            if len(points_kubik) < 4:
+                print("Error: Perlu >= 4 point!")
+                points_kubik = []
+                
+        elif choice == '2':
+            if not points_kubik:
+                print("Masukan kordinata terlebih dahulu (Option 1)")
+                continue
+            delta_t = 0.01
+            bzr_kubik = bzr.kubik(delta_t, points_kubik)
+            plot_bzier(bzr_kubik)
+            
+        elif choice == '3':
+            if not points_kubik:
+                print("Masukan kordinata terlebih dahulu (Option 1)")
+                continue
+            interactive_plot(points_kubik)
+            
+        elif choice == '4':
+            points = manual_point_plot()
+            interactive_plot(points)
+        
+        elif choice == '5':
+            print("Exiting program...")
+            break
+            
+        else:
+            print("Invalid option! Please try again.")
